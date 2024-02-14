@@ -1,12 +1,12 @@
 
 import { ThemeProvider } from "@/components/ui/theme-provider"
 import '@/styles/main.scss'
-import MasterLayout from "@/components/theme/layout/MasterLayout"
+import Index from "@/components/theme/dashboard/Index"
 const App = () => {
   return (
     <>
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <MasterLayout />
+     <Index />
     </ThemeProvider>
     </>
   )
