@@ -16,10 +16,11 @@ import {
 import MasterLayout from '../layout/MasterLayout';
 import { DataTable } from '@/components/common/dataTable/DataTable';
 import { fetchUsers } from '@/store/action/usersAction';
-import { useToast } from "@/components/ui/use-toast"
+// import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 
 const Index = () => {
-    const { toast } = useToast();
+    // const { toast } = useToast();
     const dispatch = useDispatch();
     const { user } = useSelector(state => state)
 
@@ -29,12 +30,38 @@ const Index = () => {
 
     const onSubmit = (data) => {
         const value = JSON.parse(data)
-        console.log(value  )
-        toast({
-            title: "User Info ",
-            description: `Name : ${value.original.name}, Email : ${value.original.email}`,
-          })
-      }
+        // toast({
+        //     title: "User Info",
+        //     description: (
+        //         <div>
+        //             <div>Name: {value.original.name}</div>
+        //             <div>Email: {value.original.email}</div>
+        //             <div>Phone: {value.original.phone}</div>
+        //             <div>Username: {value.original.username}</div>
+        //             <div>Website: {value.original.website}</div>
+        //             <div>Company: {value.original.company}</div>
+        //             <div>Address: {value.original.address}</div>
+        //         </div>
+        //     ),
+        // });
+        toast("User Info", {
+            description: (
+                <div>
+                    <div>Name: {value.original.name}</div>
+                    <div>Email: {value.original.email}</div>
+                    <div>Phone: {value.original.phone}</div>
+                    <div>Username: {value.original.username}</div>
+                    <div>Website: {value.original.website}</div>
+                    <div>Company: {value.original.company}</div>
+                    <div>Address: {value.original.address}</div>
+                </div>
+            ),
+            action: {
+                label: "Undo",
+                onClick: () => console.log("Undo"),
+            },
+        })
+    }
 
     const data = user && user.length ? user.map((items) => {
         return {
@@ -58,14 +85,14 @@ const Index = () => {
                         table.getIsAllPageRowsSelected() ||
                         (table.getIsSomePageRowsSelected() && "indeterminate")
                     }
-                    onCheckedChange={(value) =>{ table.toggleAllPageRowsSelected(!!value)}}
+                    onCheckedChange={(value) => { table.toggleAllPageRowsSelected(!!value) }}
                     aria-label="Select all"
                 />
             ),
             cell: ({ row }) => (
                 <Checkbox
                     checked={row.getIsSelected()}
-                    onCheckedChange={(value) => {row.toggleSelected(!!value)}}
+                    onCheckedChange={(value) => { row.toggleSelected(!!value) }}
                     aria-label="Select row"
                 />
             ),
@@ -132,7 +159,7 @@ const Index = () => {
             id: "actions",
             enableHiding: false,
             cell: ({ row }) => {
-                const {id} = row.original;
+                const { id } = row.original;
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -146,12 +173,12 @@ const Index = () => {
                             <DropdownMenuItem
                                 onClick={() => navigator.clipboard.writeText(id)}
                             >
-                                <CopyIcon className='text-blue-600 me-1' /> <span>Copy User ID</span>
+                                <CopyIcon className='text-blue-600 me-2 w-5 h-5' /> <span>Copy User ID</span>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => onSubmit(JSON.stringify(row))}><EyeOpenIcon className='text-green-500 me-1' /> <span>View User</span></DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onSubmit(JSON.stringify(row))}><Pencil2Icon className='text-cyan-500 me-1'/> <span>Edit User</span></DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onSubmit(JSON.stringify(row))}><TrashIcon className='text-red-500 me-1'/> <span>Delete User</span></DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onSubmit(JSON.stringify(row))}><EyeOpenIcon className='text-green-500 me-2 w-5 h-5' /> <span>View User</span></DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onSubmit(JSON.stringify(row))}><Pencil2Icon className='text-cyan-500 me-2 w-5 h-5' /> <span>Edit User</span></DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onSubmit(JSON.stringify(row))}><TrashIcon className='text-red-500 me-2 w-5 h-5' /> <span>Delete User</span></DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );
@@ -161,8 +188,7 @@ const Index = () => {
 
     return (
         <MasterLayout>
-            <DataTable data={data}
-                columns={columns} filterValue={'name'} />
+            <DataTable data={data} columns={columns} filterValue={'name'} />
         </MasterLayout>
     )
 }

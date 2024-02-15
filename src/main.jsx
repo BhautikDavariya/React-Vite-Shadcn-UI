@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import { Toaster } from "@/components/ui/toaster"
+// import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/sonner"
 // store.js
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
