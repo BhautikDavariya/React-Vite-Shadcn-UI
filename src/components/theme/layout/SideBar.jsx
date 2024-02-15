@@ -6,12 +6,12 @@ const SideBar = () => {
         <div className='h-[calc(100vh-66px)]'>
             <Sidebar className='h-[calc(100vh-66px)] bg-transparent'>
                 <Menu className='bg-transparent'>
-                    <SubMenu label="Charts">
+                    {/* <SubMenu label="User">
                         <MenuItem> Pie charts </MenuItem>
                         <MenuItem> Line charts </MenuItem>
-                    </SubMenu>
-                    <MenuItem> Documentation </MenuItem>
-                    <MenuItem> Calendar </MenuItem>
+                    </SubMenu> */}
+                    <MenuItem className=' border-collapse border-x-0 border-t-0 border-b-2 '> User </MenuItem>
+                    <MenuItem  className=' border-collapse border-x-0 border-t-0 border-b-2 '> Calendar </MenuItem>
                 </Menu>
             </Sidebar>
         </div>

@@ -12,7 +12,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -33,11 +40,14 @@ import {
 
 
 export function DataTable(props) {
-  const { data, columns } = props
+  const { data, columns, filterValue } = props
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
+  const [pageIndex, setPageIndex] = useState(0);
+  const pageSize = 5; // You might want to adjust this based on your requirements
+
 
   const table = useReactTable({
     data,
@@ -55,18 +65,28 @@ export function DataTable(props) {
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination: {
+        pageIndex,
+        pageSize,
+      },
     },
   });
 
+  const pageCount = Math.ceil(table.getFilteredRowModel().rows.length / pageSize);
+
+  const handlePageChange = (newPageIndex) => {
+    setPageIndex(newPageIndex);
+    table.setPageIndex(newPageIndex);
+  };
 
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() || "")}
+          placeholder="Filter..."
+          value={(table.getColumn(filterValue)?.getFilterValue() || "")}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn(filterValue)?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -108,9 +128,9 @@ export function DataTable(props) {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
@@ -152,7 +172,7 @@ export function DataTable(props) {
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="space-x-2">
+        {/* <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
@@ -169,6 +189,37 @@ export function DataTable(props) {
           >
             Next
           </Button>
+        </div> */}
+        <div className="flex items-center justify-end py-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  disabled={pageIndex === 0}
+                  onClick={(e) => {pageIndex === 0 ? e.preventDefault() : handlePageChange(pageIndex - 1)}}
+                />
+              </PaginationItem>
+              {[...Array(pageCount).keys()].map((page) => (
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    href="#"
+                    isActive={pageIndex === page}
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  disabled={pageIndex === pageCount - 1}
+                  onClick={(e) => {pageIndex === pageCount - 1 ? e.preventDefault() : handlePageChange(pageIndex + 1)}}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       </div>
     </div>

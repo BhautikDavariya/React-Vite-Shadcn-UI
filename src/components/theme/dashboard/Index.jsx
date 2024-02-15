@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@/components/ui/button';
 import {
-    DotsHorizontalIcon,
+    DotsHorizontalIcon, TrashIcon, Pencil2Icon, EyeOpenIcon, CopyIcon
 } from "@radix-ui/react-icons";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -15,30 +15,37 @@ import {
 } from "@/components/ui/dropdown-menu";
 import MasterLayout from '../layout/MasterLayout';
 import { DataTable } from '@/components/common/dataTable/DataTable';
-import { fetchPortfolios } from '@/store/action/protfolioMainAction';
+import { fetchUsers } from '@/store/action/usersAction';
 import { useToast } from "@/components/ui/use-toast"
 
 const Index = () => {
     const { toast } = useToast();
     const dispatch = useDispatch();
-    const { portfolio } = useSelector(state => state)
+    const { user } = useSelector(state => state)
 
     useEffect(() => {
-        dispatch(fetchPortfolios(true))
+        dispatch(fetchUsers())
     }, [])
 
-    function onSubmit(data) {
+    const onSubmit = (data) => {
+        const value = JSON.parse(data)
+        console.log(value  )
         toast({
-            title: "Select All ",
-            description: "Complete = " + data,
+            title: "User Info ",
+            description: `Name : ${value.original.name}, Email : ${value.original.email}`,
           })
       }
 
-    const data = portfolio && portfolio.length ? portfolio.map((items) => {
+    const data = user && user.length ? user.map((items) => {
         return {
-            id: items._id,
-            portfolio: items.portfolio.name,
-            portfolioGroup: items.portfolioGroup.name
+            id: items.id,
+            name: items.name,
+            email: items.email,
+            phone: items.phone,
+            username: items.username,
+            website: items.website,
+            company: items.company.name,
+            address: items.address.city,
         }
     }) : []
 
@@ -51,14 +58,14 @@ const Index = () => {
                         table.getIsAllPageRowsSelected() ||
                         (table.getIsSomePageRowsSelected() && "indeterminate")
                     }
-                    onCheckedChange={(value) =>{ table.toggleAllPageRowsSelected(!!value);  onSubmit(value)}}
+                    onCheckedChange={(value) =>{ table.toggleAllPageRowsSelected(!!value)}}
                     aria-label="Select all"
                 />
             ),
             cell: ({ row }) => (
                 <Checkbox
                     checked={row.getIsSelected()}
-                    onCheckedChange={(value) => {row.toggleSelected(!!value); value && onSubmit(JSON.stringify(row))}}
+                    onCheckedChange={(value) => {row.toggleSelected(!!value)}}
                     aria-label="Select row"
                 />
             ),
@@ -73,25 +80,59 @@ const Index = () => {
             ),
         },
         {
-            accessorKey: "portfolio",
-            header: "portfolio",
+            accessorKey: "name",
+            header: "name",
             cell: ({ row }) => (
-                <div className="capitalize">{row.getValue("portfolio")}</div>
+                <div className="capitalize">{row.getValue("name")}</div>
             ),
         },
         {
-            accessorKey: "portfolioGroup",
-            header: "portfolioGroup",
+            accessorKey: "username",
+            header: "username",
             cell: ({ row }) => (
-                <div className="capitalize">{row.getValue("portfolioGroup")}</div>
+                <div className="capitalize">{row.getValue("username")}</div>
+            ),
+        },
+        {
+            accessorKey: "email",
+            header: "email",
+            cell: ({ row }) => (
+                <div className="capitalize">{row.getValue("email")}</div>
+            ),
+        },
+        {
+            accessorKey: "phone",
+            header: "phone",
+            cell: ({ row }) => (
+                <div className="capitalize">{row.getValue("phone")}</div>
+            ),
+        },
+        {
+            accessorKey: "address",
+            header: "address",
+            cell: ({ row }) => (
+                <div className="capitalize">{row.getValue("address")}</div>
+            ),
+        },
+        {
+            accessorKey: "company",
+            header: "company",
+            cell: ({ row }) => (
+                <div className="capitalize">{row.getValue("company")}</div>
+            ),
+        },
+        {
+            accessorKey: "website",
+            header: "website",
+            cell: ({ row }) => (
+                <div className="capitalize">{row.getValue("website")}</div>
             ),
         },
         {
             id: "actions",
             enableHiding: false,
             cell: ({ row }) => {
-                // const payment = row.original;
-
+                const {id} = row.original;
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -103,13 +144,14 @@ const Index = () => {
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem
-                                // onClick={() => navigator.clipboard.writeText(payment.id)}
+                                onClick={() => navigator.clipboard.writeText(id)}
                             >
-                                Copy payment ID
+                                <CopyIcon className='text-blue-600 me-1' /> <span>Copy User ID</span>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>View customer</DropdownMenuItem>
-                            <DropdownMenuItem>View payment details</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onSubmit(JSON.stringify(row))}><EyeOpenIcon className='text-green-500 me-1' /> <span>View User</span></DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onSubmit(JSON.stringify(row))}><Pencil2Icon className='text-cyan-500 me-1'/> <span>Edit User</span></DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => onSubmit(JSON.stringify(row))}><TrashIcon className='text-red-500 me-1'/> <span>Delete User</span></DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );
@@ -120,7 +162,7 @@ const Index = () => {
     return (
         <MasterLayout>
             <DataTable data={data}
-                columns={columns} />
+                columns={columns} filterValue={'name'} />
         </MasterLayout>
     )
 }
